@@ -171,9 +171,35 @@ def step2(word):
                 break
         return word
     
+def step3(word):
+    word = word.lower()
+    suffix_list = [["icate", "ic"], 
+                   ["ative", ""], 
+                   ["alize", "al"], 
+                   ["iciti", "ic"], 
+                   ["ical", "ic"], 
+                   ["full", ""], 
+                   ["ness", ""]]
+
+    if wordToM(word)>0:
+        for i in suffix_list:
+            if endsWithS(word, letter=i[0]):
+                word = word.replace(i[0], i[1])
+                break
+        return word
     
-print(step2(("formaliti")))
+def step4(word):
+    word = word.lower()
+    suffix_list = ["al", "ance", "ence", "er", "ic", "able", "ible", "ant", "ement", "ment", "ent", "sion", "tion", "ou", "ism", "ate", "iti", "ous", "ive", "ize"]
+
+    if wordToM(word)>1:
+        for i in suffix_list:
+            if endsWithS(word, letter=i):
+                word = word.replace(i, "")
+                break
+        return word
 
 
 
+print(step4("homologous"))
 
