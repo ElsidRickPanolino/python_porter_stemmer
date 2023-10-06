@@ -99,7 +99,13 @@ def iscvc(word):
             return False
     else:
         return False
-    
+
+def replace_end(word, old, new):
+    trim_size = len(old)*-1
+    word = word [:trim_size]
+    word += new
+    return word
+
 def changeWord(word, old, new):
         if endsWith(word, old):
             word = word.replace(old, new)
@@ -111,8 +117,8 @@ def step1a(word):
     suffix_list = [["sses", "ss"], ["ies", "i"], ["ss", "ss"], ["s", ""]]
     for i in suffix_list:
         if endsWith(word, i[0]):
-            word = word.replace(i[0], i[1])
-            print("step1")
+            # word = word.replace(i[0], i[1])
+            # print("step1")
             break
     return word
 
@@ -124,30 +130,30 @@ def step1b(word):
         if haveVowel(word):            
             if endsWith(word, "ed"):
                 word = word.replace("ed","")
-                print("step1b")
+                # print("step1b")
                 sec_and_third = True
 
             elif endsWith(word, "ing"):
                 word = word.replace("ing","")
-                print("step1b")
+                # print("step1b")
                 sec_and_third = True
 
             if sec_and_third:
                 if endsWith(word, "at"):
                     word = word.replace("at","ate")
-                    print("step1b")
+                    # print("step1b")
                 elif endsWith(word, "bl"):
                     word = word.replace("bl","ble")
-                    print("step1b")
+                    # print("step1b")
                 elif endsWith(word, "iz"):
                     word = word.replace("iz","ize")
-                    print("step1b")
+                    # print("step1b")
                 elif doubleConsonant(word) and not endsWith(word, "l") and not endsWith(word, "s") and not endsWith(word, "z"):
                     word = word[:-1]
-                    print("step1b")
+                    # print("step1b")
                 if wordToM(word) == 1 and iscvc(word):
                     word += "e"
-                    print("step1b")
+                    # print("step1b")
                     
                     
     return word
@@ -185,7 +191,7 @@ def step2(word):
         for i in suffix_list:
             if endsWith(word, i[0]):
                 word = word.replace(i[0], i[1])
-                print("step2")
+                # print("step2")
                 break
     return word
     
@@ -201,7 +207,7 @@ def step3(word):
         for i in suffix_list:
             if endsWith(word, i[0]):
                 word = word.replace(i[0], i[1])
-                print("step3")
+                # print("step3")
                 break
     return word
     
@@ -218,7 +224,7 @@ def step4(word):
                 
             if endsWith(word, i):
                 word = word.replace(i, "")
-                print("step4")
+                # print("step4")
                 break
     return word
 
@@ -227,10 +233,10 @@ def step4(word):
 def step5a(word):
     if wordToM(word) > 1:
         word = changeWord(word, "e", "")
-        print("step5a 1")
+        # print("step5a 1")
     elif wordToM(word) == 1 and not endsWith(word, "o"):
         word = changeWord(word, "e", "")
-        print("step5a 2")
+        # print("step5a 2")
         
     return word
 
@@ -238,7 +244,7 @@ def step5a(word):
 def step5b(word):
     if wordToM(word)>1 and doubleConsonant(word) and endsWith(word,"l"):
         changeWord(word, "ll", "l")
-        print("step5b")
+        # print("step5b")
         
     return word
         
@@ -261,3 +267,78 @@ def stem(word):
     word = step5b(word)
     print(word, "5b")
     return word
+
+
+word_list = [
+    "Running",
+    "Jumps",
+    "Jumping",
+    "Walked",
+    "Walking",
+    "Better",
+    "Biggest",
+    "Smallest",
+    "Happier",
+    "Happiest",
+    "Eating",
+    "Eating",
+    "Writes",
+    "Writing",
+    "Writes",
+    "Writing",
+    "Studies",
+    "Studying",
+    "Cries",
+    "Crying",
+    "Agreed",
+    "Agreement",
+    "Agrees",
+    "Joking",
+    "Joked",
+    "Jokes",
+    "Friendly",
+    "Friendship",
+    "Friends",
+    "Quickly",
+    "Quickest",
+    "Quick",
+    "Beautiful",
+    "Beauty",
+    "Beauties",
+    "Happily",
+    "Happiest",
+    "Happy",
+    "Teacher",
+    "Teaches",
+    "Teaching",
+    "Singing",
+    "Sings",
+    "Sang",
+    "Played",
+    "Playing",
+    "Plays",
+    "Organized",
+    "Organizing",
+    "Organizes",
+    "Calmly",
+    "Calmest",
+    "Calm",
+    "Running",
+    "Runner",
+    "Runs",
+    "Danced",
+    "Dancing",
+    "Dances",
+    "Laughed",
+    "Laughing",
+    "Laughs",
+    "Smiling",
+    "Smiles",
+    "Smiled"
+]
+
+
+# for i in word_list:
+#     print(i, "=>", stem(i))
+
+print(replace_end("singing", "ing",""))
