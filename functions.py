@@ -6,6 +6,7 @@ def wordTocv(word):
     cv_pattern = ""
     
     if len(word)>0:
+
         for i in range(len(word)):
             if i==len(word)-1:
                 cons = "bcdfghjklmnpqrstvwxyz"
@@ -60,7 +61,7 @@ def wordToM(word):
 
 # porter stemer algorithm notation *s
 # determine if the word ends with s or other letter
-def endsWithS(word, letter = "s"): 
+def endsWith(word, letter): 
     if word.endswith(letter):
         return True
     else:
@@ -79,7 +80,7 @@ def haveVowel(word):
 def doubleConsonant(word): 
     cv = wordTocv(word)
     if(len(word)>=2):
-        if endsWithS(cv, letter = "cc") and word[-1] == word[-2]:
+        if endsWith(cv, "cc") and word[-1] == word[-2]:
             return True
     else:
         return False
@@ -89,7 +90,7 @@ def doubleConsonant(word):
 def iscvc(word): 
     cv = wordTocv(word)
     if len(cv) >= 3:
-        if endsWithS(cv, letter = "cvc"):
+        if endsWith(cv, "cvc"):
             if word[-1] != 'w' or word[-1] != 'x' or word[-1] != 'y':
                 return True
             else:
@@ -98,51 +99,67 @@ def iscvc(word):
             return False
     else:
         return False
+    
+def changeWord(word, old, new):
+        if endsWith(word, old):
+            word = word.replace(old, new)
+        return word
 
+    
 # to get the base word from the plural form
 def step1a(word):
-    word = word.lower()
     suffix_list = [["sses", "ss"], ["ies", "i"], ["ss", "ss"], ["s", ""]]
     for i in suffix_list:
-        if endsWithS(word, letter=i[0]):
+        if endsWith(word, i[0]):
             word = word.replace(i[0], i[1])
+            print("step1")
             break
     return word
 
 
 def step1b(word):
-    word = word.lower()
     sec_and_third = False
     if wordToM(word) > 0:
         word = word.replace("eed","ee")
-        if haveVowel(word):
-            if endsWithS(word, letter="ed"):
+        if haveVowel(word):            
+            if endsWith(word, "ed"):
                 word = word.replace("ed","")
+                print("step1b")
                 sec_and_third = True
 
-            elif endsWithS(word, letter="ing"):
+            elif endsWith(word, "ing"):
                 word = word.replace("ing","")
+                print("step1b")
                 sec_and_third = True
 
             if sec_and_third:
-                if endsWithS(word, letter="at"):
+                if endsWith(word, "at"):
                     word = word.replace("at","ate")
-                elif endsWithS(word, letter="bl"):
+                    print("step1b")
+                elif endsWith(word, "bl"):
                     word = word.replace("bl","ble")
-                elif endsWithS(word, letter="iz"):
+                    print("step1b")
+                elif endsWith(word, "iz"):
                     word = word.replace("iz","ize")
-                elif doubleConsonant(word) and not endsWithS(word, letter="l") and not endsWithS(word, letter="s") and not endsWithS(word, letter="z"):
+                    print("step1b")
+                elif doubleConsonant(word) and not endsWith(word, "l") and not endsWith(word, "s") and not endsWith(word, "z"):
                     word = word[:-1]
+                    print("step1b")
+                if wordToM(word) == 1 and iscvc(word):
+                    word += "e"
+                    print("step1b")
+                    
+                    
+    return word
       
 def step1c(word):
-    if endsWithS(word, letter="y"):
+    
+    if endsWith(word, "y"):
         if haveVowel(word):
             word = word.replace("y","i")
-
     return word
 
 def step2(word):
-    word = word.lower()
     suffix_list = [["ational", "ate"], 
                    ["tional", "tion"], 
                    ["enci", "ence"], 
@@ -166,13 +183,13 @@ def step2(word):
 
     if wordToM(word)>0:
         for i in suffix_list:
-            if endsWithS(word, letter=i[0]):
+            if endsWith(word, i[0]):
                 word = word.replace(i[0], i[1])
+                print("step2")
                 break
-        return word
+    return word
     
 def step3(word):
-    word = word.lower()
     suffix_list = [["icate", "ic"], 
                    ["ative", ""], 
                    ["alize", "al"], 
@@ -180,26 +197,67 @@ def step3(word):
                    ["ical", "ic"], 
                    ["full", ""], 
                    ["ness", ""]]
-
     if wordToM(word)>0:
         for i in suffix_list:
-            if endsWithS(word, letter=i[0]):
+            if endsWith(word, i[0]):
                 word = word.replace(i[0], i[1])
+                print("step3")
                 break
-        return word
+    return word
     
 def step4(word):
-    word = word.lower()
-    suffix_list = ["al", "ance", "ence", "er", "ic", "able", "ible", "ant", "ement", "ment", "ent", "sion", "tion", "ou", "ism", "ate", "iti", "ous", "ive", "ize"]
+    suffix_list = ["al", "ance", "ence", "er", "ic", "able", "ible", "ant", "ement", "ment", "ent", "ion", "ou", "ism", "ate", "iti", "ous", "ive", "ize"]
 
     if wordToM(word)>1:
         for i in suffix_list:
-            if endsWithS(word, letter=i):
+            if i == "ion":
+                if word[-1] == "s":
+                    word = word.replace(i, "s")
+                if word[-1] == "t":
+                    word = word.replace(i, "t")
+                
+            if endsWith(word, i):
                 word = word.replace(i, "")
+                print("step4")
                 break
-        return word
+    return word
 
 
 
-print(step4("homologous"))
+def step5a(word):
+    if wordToM(word) > 1:
+        word = changeWord(word, "e", "")
+        print("step5a 1")
+    elif wordToM(word) == 1 and not endsWith(word, "o"):
+        word = changeWord(word, "e", "")
+        print("step5a 2")
+        
+    return word
 
+
+def step5b(word):
+    if wordToM(word)>1 and doubleConsonant(word) and endsWith(word,"l"):
+        changeWord(word, "ll", "l")
+        print("step5b")
+        
+    return word
+        
+def stem(word):
+    word = word.lower()
+    word = step1a(word)
+    print(word, "1a")
+    word = step1b(word)
+    print(word, "1b")
+    word = step1c(word)
+    print(word, "1c")
+    word = step2(word)
+    print(word, "2")
+    word = step3(word)
+    print(word, "3")
+    word = step4(word)
+    print(word, "4")
+    word = step5a(word)
+    print(word, "5a")
+    word = step5b(word)
+    print(word, "5b")
+    return word
