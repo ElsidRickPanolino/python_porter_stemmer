@@ -1,3 +1,6 @@
+import re
+import string
+
 # converts word to cv pattern
 def wordTocv(word):
     cons = "bcdfghjklmnpqrstvwxz"
@@ -70,10 +73,8 @@ def endsWith(word, letter):
 # porter stemer algorithm notation *v*
 # determine if the word ends contains vowel
 def haveVowel(word): 
-    if cvToCV(wordTocv(word)) == "C":
-        return False
-    else:
-        return True
+    pattern = r'^.*[aeiouAEIOU].*$'
+    return re.match(pattern, word) is not None
     
 # porter stemer algorithm notation *d
 # determine if the word ends with double consonant
@@ -108,7 +109,7 @@ def replace_end(word, old, new):
 
 def changeWord(word, old, new):
         if endsWith(word, old):
-            word = word.replace(old, new)
+            word = replace_end(word, old, new)
         return word
 
     
@@ -117,7 +118,7 @@ def step1a(word):
     suffix_list = [["sses", "ss"], ["ies", "i"], ["ss", "ss"], ["s", ""]]
     for i in suffix_list:
         if endsWith(word, i[0]):
-            # word = word.replace(i[0], i[1])
+            word = replace_end(word, i[0], i[1])
             # print("step1")
             break
     return word
@@ -126,29 +127,29 @@ def step1a(word):
 def step1b(word):
     sec_and_third = False
     if wordToM(word) > 0:
-        word = word.replace("eed","ee")
+        word = changeWord(word, "eed","ee")
         if haveVowel(word):            
             if endsWith(word, "ed"):
-                word = word.replace("ed","")
+                word = replace_end(word, "ed","")
                 # print("step1b")
                 sec_and_third = True
 
             elif endsWith(word, "ing"):
-                word = word.replace("ing","")
+                word = replace_end(word, "ing","")
                 # print("step1b")
                 sec_and_third = True
 
             if sec_and_third:
                 if endsWith(word, "at"):
-                    word = word.replace("at","ate")
+                    word = replace_end(word, "at","ate")
                     # print("step1b")
                 elif endsWith(word, "bl"):
-                    word = word.replace("bl","ble")
+                    word = replace_end(word, "bl","ble")
                     # print("step1b")
                 elif endsWith(word, "iz"):
-                    word = word.replace("iz","ize")
+                    word = replace_end(word, "iz","ize")
                     # print("step1b")
-                elif doubleConsonant(word) and not endsWith(word, "l") and not endsWith(word, "s") and not endsWith(word, "z"):
+                if doubleConsonant(word) and not endsWith(word, "l") and not endsWith(word, "s") and not endsWith(word, "z"):
                     word = word[:-1]
                     # print("step1b")
                 if wordToM(word) == 1 and iscvc(word):
@@ -162,7 +163,7 @@ def step1c(word):
     
     if endsWith(word, "y"):
         if haveVowel(word):
-            word = word.replace("y","i")
+            word = replace_end(word, "y","i")
     return word
 
 def step2(word):
@@ -190,7 +191,7 @@ def step2(word):
     if wordToM(word)>0:
         for i in suffix_list:
             if endsWith(word, i[0]):
-                word = word.replace(i[0], i[1])
+                word = replace_end(word, i[0], i[1])
                 # print("step2")
                 break
     return word
@@ -206,7 +207,7 @@ def step3(word):
     if wordToM(word)>0:
         for i in suffix_list:
             if endsWith(word, i[0]):
-                word = word.replace(i[0], i[1])
+                word = replace_end(word, i[0], i[1])
                 # print("step3")
                 break
     return word
@@ -218,12 +219,12 @@ def step4(word):
         for i in suffix_list:
             if i == "ion":
                 if word[-1] == "s":
-                    word = word.replace(i, "s")
+                    word = replace_end(word, i, "s")
                 if word[-1] == "t":
-                    word = word.replace(i, "t")
+                    word = replace_end(word, i, "t")
                 
             if endsWith(word, i):
-                word = word.replace(i, "")
+                word = replace_end(word, i, "")
                 # print("step4")
                 break
     return word
@@ -250,95 +251,60 @@ def step5b(word):
         
 def stem(word):
     word = word.lower()
+    
+    punctuation_chars = set(string.punctuation)
+    
+    word = word.rstrip(''.join(punctuation_chars))
+
     word = step1a(word)
-    print(word, "1a")
+    # print(word, "1a")
     word = step1b(word)
-    print(word, "1b")
+    # print(word, "1b")
     word = step1c(word)
-    print(word, "1c")
+    # print(word, "1c")
     word = step2(word)
-    print(word, "2")
+    # print(word, "2")
     word = step3(word)
-    print(word, "3")
+    # print(word, "3")
     word = step4(word)
-    print(word, "4")
+    # print(word, "4")
     word = step5a(word)
-    print(word, "5a")
+    # print(word, "5a")
     word = step5b(word)
-    print(word, "5b")
+    # print(word, "5b")
     return word
 
 
-word_list = [
-    "Running",
-    "Jumps",
-    "Jumping",
-    "Walked",
-    "Walking",
-    "Better",
-    "Biggest",
-    "Smallest",
-    "Happier",
-    "Happiest",
-    "Eating",
-    "Eating",
-    "Writes",
-    "Writing",
-    "Writes",
-    "Writing",
-    "Studies",
-    "Studying",
-    "Cries",
-    "Crying",
-    "Agreed",
-    "Agreement",
-    "Agrees",
-    "Joking",
-    "Joked",
-    "Jokes",
-    "Friendly",
-    "Friendship",
-    "Friends",
-    "Quickly",
-    "Quickest",
-    "Quick",
-    "Beautiful",
-    "Beauty",
-    "Beauties",
-    "Happily",
-    "Happiest",
-    "Happy",
-    "Teacher",
-    "Teaches",
-    "Teaching",
-    "Singing",
-    "Sings",
-    "Sang",
-    "Played",
-    "Playing",
-    "Plays",
-    "Organized",
-    "Organizing",
-    "Organizes",
-    "Calmly",
-    "Calmest",
-    "Calm",
-    "Running",
-    "Runner",
-    "Runs",
-    "Danced",
-    "Dancing",
-    "Dances",
-    "Laughed",
-    "Laughing",
-    "Laughs",
-    "Smiling",
-    "Smiles",
-    "Smiled"
-]
+def stemPhrase(phrase):
+    words_lst = phrase.split(" ")
+    
+    # for i in words_lst:
+    #     if any(char in string.punctuation for char in i):
+    #         word_text, word_punctuation = "", ""
+    #         for char in i:
+    #             if char in string.punctuation:
+    #                 word_punctuation += char
+    #             else:
+    #                 word_text += char
+    #         stemmed_text = stem(word_text)
+    #         stemmed_word = stemmed_text + word_punctuation
+    #         words_lst.append(stemmed_word)
+        
+
+    #     else:
+    #         stemmed_word = stem(i)
+    #         words_lst.append(stemmed_word)
+    
+    # words_lst = ' '.join(words_lst)
+    
+        
+    for i in range(len(words_lst)):
+        words_lst[i] = stem(words_lst[i])
+        
+    stemmed_phrase = ""
+    for i in words_lst:
+        stemmed_phrase += " "+i
+        
+    return stemmed_phrase
 
 
-# for i in word_list:
-#     print(i, "=>", stem(i))
-
-print(replace_end("singing", "ing",""))
